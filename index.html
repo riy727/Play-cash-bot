@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Cash Bot</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #111319;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background: #181a22;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        
+        /* Top Header */
+        .app-header {
+            background: #1f222e;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #2d3245;
+        }
+        .app-header h1 { margin: 0; font-size: 22px; color: #4CAF50; }
+        .app-header p { margin: 3px 0 0 0; font-size: 12px; color: #8a92b2; }
+
+        /* Main Content Screen Area */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 90px; /* space for bottom menu */
+        }
+
+        /* Tab Screen display rule */
+        .tab-screen { display: none; }
+        .tab-screen.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Widgets/Cards styling */
+        .balance-card {
+            background: linear-gradient(135deg, #1e7e34, #155724);
+            padding: 25px 15px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .balance-card h3 { margin: 0; font-size: 13px; color: #d4edda; text-transform: uppercase; letter-spacing: 1px; }
+        .balance-card .coins { font-size: 38px; font-weight: bold; margin-top: 5px; display: block; }
+
+        .limit-card {
+            background: rgba(255, 183, 77, 0.1);
+            border: 1px solid #ffb74d;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            color: #ffb74d;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            color: #4CAF50;
+            margin: 15px 0 10px 0;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Buttons and Form controls */
+        .ad-card {
+            background: #222634;
+            border: 1px solid #2d3245;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ad-info h4 { margin: 0 0 5px 0; color: #fff; font-size: 15px; }
+        .ad-info p { margin: 0; color: #ffb74d; font-size: 12px; font-weight: bold; }
+        
+        .btn-watch {
+            background: #4CAF50; color: #fff; border: none; padding: 10px 15px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-watch:active { transform: scale(0.95); }
+        .btn-watch:disabled { background: #444 !important; color: #aaa; cursor: not-allowed; }
+
+        select, input {
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px;
+            border: 1px solid #2d3245; background: #111319; color: #fff; font-size: 14px;
+        }
+        .btn-submit {
+            background: #e53935; color: white; font-weight: bold; border: none;
+            padding: 14px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px;
+        }
+
+        /* Refer & Profile Box Styling */
+        .refer-box {
+            background: #222634; border: 1px solid #2d3245; padding: 15px; 
+            border-radius: 12px; text-align: center; margin-bottom: 20px;
+        }
+        .btn-copy {
+            background: #3b5998; color: white; font-weight: bold; border: none;
+            padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-top: 10px; color:#fff;
+        }
+
+        /* Profile details list */
+        .profile-list { background: #222634; border-radius: 12px; padding: 10px 15px; }
+        .profile-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2d3245; }
+        .profile-item:last-child { border-bottom: none; }
+
+        /* Bottom Navigation Menu Bar */
+        .bottom-nav {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
+            background: #1f222e; border-top: 1px solid #2d3245;
+            display: flex; justify-content: space-around; align-items: center;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: #8a92b2; cursor: pointer; font-size: 11px; font-weight: 500;
+            transition: 0.2s; width: 25%; text-align: center;
+        }
+        .nav-item .icon { font-size: 20px; margin-bottom: 3px; }
+        .nav-item.active { color: #4CAF50; font-weight: bold; }
+    </style>
+    <!-- Core Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- 🌟 MONETAG TELEGRAM SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='11112726' data-sdk='show_11112726'></script>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="app-header">
+        <h1 id="appTitle">Play Cash Bot 💰</h1>
+        <p>Complete tasks & withdraw money</p>
+    </div>
+
+    <div class="main-content">
+        
+        <!-- 1. HOME SCREEN -->
+        <div id="screen-home" class="tab-screen active">
+            <div class="balance-card">
+                <h3>Main Balance</h3>
+                <span class="coins" id="userCoins">0</span>
+            </div>
+
+            <!-- ডেইলি লিমিট ট্র্যাকার উইজেট -->
+            <div class="limit-card">
+                Today's Ad Earnings: <b id="dailyTracker">0</b> / <span id="maxDailyLimitText">25</span> Coins
+            </div>
+
+            <div class="section-title">Instant Earn Zone ⚡</div>
+
+            <div class="ad-card">
+                <div class="ad-info">
+                    <h4>Direct Video Ad - 01</h4>
+                    <p>Reward: +5 Coins</p>
+                </div>
+                <button class="btn-watch ad-btn" onclick="startUniversalAd('Home Ad 1', 5)">Watch</button>
+            </div>
+
+            <div class="ad-card">
+                <div class="ad-info">
+                    <h4>Direct Video Ad - 02</h4>
+                    <p>Reward: +5 Coins</p>
+                </div>
+                <button class="btn-watch ad-btn" style="background:#ff9800;" onclick="startUniversalAd('Home Ad 2', 5)">Watch</button>
+            </div>
+
+            <div style="background: #222634; padding: 15px; border-radius: 12px; text-align: center; border: 1px dashed #4CAF50; margin-top: 20px;">
+                <p style="margin: 0; font-size: 12px; color: #b3b9d1; line-height: 1.4;">নিয়মিত সবগুলো অ্যাড দেখুন। প্রতিদিন নির্দিষ্ট লিমিট পর্যন্ত ইনকাম করতে পারবেন।</p>
+            </div>
+        </div>
+
+        <!-- 2. MORE ADS SCREEN -->
+        <div id="screen-tasks" class="tab-screen">
+            <h3 style="margin-top: 0; color: #4CAF50;">More Bonus Ads</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">এখানকার অ্যাডগুলো দেখলেও ডেইলি লিমিট এর মধ্যে কাউন্ট হবে:</p>
+            
+            <div class="ad-card">
+                <div class="ad-info">
+                    <h4>Premium Video Ad - 03</h4>
+                    <p>Reward: +5 Coins</p>
+                </div>
+                <button class="btn-watch ad-btn" style="background:#00bcd4;" onclick="startUniversalAd('Premium Ad 3', 5)">Watch</button>
+            </div>
+
+            <div class="ad-card">
+                <div class="ad-info">
+                    <h4>Special Ad Bonus - 04</h4>
+                    <p>Reward: +10 Coins</p>
+                </div>
+                <button class="btn-watch ad-btn" style="background:#9c27b0;" onclick="startUniversalAd('Special Ad 4', 10)">Watch</button>
+            </div>
+        </div>
+
+        <!-- 3. WITHDRAW SCREEN -->
+        <div id="screen-withdraw" class="tab-screen">
+            <h3 style="margin-top: 0; color: #e53935;">Withdrawal Section</h3>
+            <p id="withdrawNotice" style="font-size: 13px; color: #ffb74d; margin-bottom: 15px; background: rgba(255,183,77,0.1); padding: 10px; border-radius: 6px;">⚠️ Minimum Cashout limit is 500 Coins (10 BDT).</p>
+            
+            <label style="font-size: 13px; color: #aaa; display:block; margin-bottom: 5px;">Select Payment Method:</label>
+            <select id="method">
+                <option value="bKash">bKash (Personal)</option>
+                <option value="Nagad">Nagad (Personal)</option>
+                <option value="Rocket">Rocket</option>
+                <option value="Binance Pay">Binance Pay (USDT)</option>
+            </select>
+            
+            <label style="font-size: 13px; color: #aaa; display:block; margin-bottom: 5px;">Account / Wallet Number:</label>
+            <input type="text" id="walletNumber" placeholder="Enter mobile number">
+            
+            <label style="font-size: 13px; color: #aaa; display:block; margin-bottom: 5px;">Amount to Withdraw (Coins):</label>
+            <input type="number" id="withdrawAmount" placeholder="Minimum 500">
+            
+            <button class="btn-submit" onclick="submitWithdraw()">Submit Withdrawal Request</button>
+        </div>
+
+        <!-- 4. REFER & PROFILE SCREEN -->
+        <div id="screen-refer" class="tab-screen">
+            <h3 style="margin-top: 25px; color: #4CAF50;">My Profile</h3>
+            <div class="profile-list">
+                <div class="profile-item">
+                    <span style="color:#8a92b2;">My Refer Code / ID:</span>
+                    <span id="profId" style="font-weight:bold; color:#4CAF50;">Loading...</span>
+                </div>
+                <div class="profile-item">
+                    <span style="color:#8a92b2;">Total Earnings:</span>
+                    <span id="profCoins" style="color:#ffb74d; font-weight:bold;">0 Coins</span>
+                </div>
+                <div class="profile-item">
+                    <span style="color:#8a92b2;">Total Referred Users:</span>
+                    <span id="profRefCount" style="color:#00bcd4; font-weight:bold;">0 Users</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home', this)">
+            <span class="icon">🏠</span>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tasks', this)">
+            <span class="icon">🎥</span>
+            <span>More Ads</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('withdraw', this)">
+            <span class="icon">💵</span>
+            <span>Withdraw</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('refer', this)">
+            <span class="icon">👥</span>
+            <span>Refer</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBtpR6XzCIBVmNsUA58C4YQhrSJNViZl-g",
+        authDomain: "playcashbot.firebaseapp.com",
+        databaseURL: "https://playcashbot-default-rtdb.firebaseio.com",
+        projectId: "playcashbot",
+        storageBucket: "playcashbot.firebasestorage.app",
+        messagingSenderId: "175216921465",
+        appId: "1:175216921465:web:ae5f30f02af3cd99267da8"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let maxDailyLimit = 25;
+    let referRewardAmount = 25;
+    let minWithdrawLimit = 500;
+
+    // 🔗 Adsterra Direct Link
+    const adsterraLink = "https://www.effectivecpmnetwork.com/hue9racyat?key=db5f5499982bf28336d71d518831cdbc";
+
+    let userId = localStorage.getItem('pc_userId');
+    if(!userId) {
+        userId = String(Math.floor(1000 + Math.random() * 9000));
+        localStorage.setItem('pc_userId', userId);
+    }
+    document.getElementById('profId').innerText = userId;
+
+    function getTodayDate() {
+        const d = new Date();
+        return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    }
+    const todayStr = getTodayDate();
+
+    // Admin Settings Listener
+    database.ref('adminSettings').on('value', (settingsSnap) => {
+        const settings = settingsSnap.val();
+        if(settings) {
+            maxDailyLimit = settings.dailyLimit || 25;
+            referRewardAmount = settings.referBonus || 25;
+            minWithdrawLimit = settings.coinsPerTen || 500;
+            
+            document.getElementById('maxDailyLimitText').innerText = maxDailyLimit;
+            document.getElementById('withdrawNotice').innerText = `⚠️ Minimum Cashout limit is ${minWithdrawLimit} Coins (10 BDT).`;
+            document.getElementById('withdrawAmount').placeholder = `Minimum ${minWithdrawLimit}`;
+        }
+    });
+
+    // Database Realtime Read
+    database.ref('users/' + userId).on('value', (snapshot) => {
+        const data = snapshot.val();
+        const coins = data ? (data.coins || 0) : 0;
+        const refCount = data ? (data.referredCount || 0) : 0;
+        const dailyEarnings = (data && data.lastAdDate === todayStr) ? (data.dailyAdCoins || 0) : 0;
+
+        document.getElementById('userCoins').innerText = coins;
+        document.getElementById('profCoins').innerText = coins + " Coins";
+        document.getElementById('profRefCount').innerText = refCount + " Users";
+        document.getElementById('dailyTracker').innerText = dailyEarnings;
+
+        if(dailyEarnings >= maxDailyLimit) {
+            document.querySelectorAll('.ad-btn').forEach(btn => btn.disabled = true);
+        } else {
+            document.querySelectorAll('.ad-btn').forEach(btn => btn.disabled = false);
+        }
+
+        if(!data) {
+            database.ref('users/' + userId).set({ 
+                coins: 0, referredCount: 0, dailyAdCoins: 0, lastAdDate: todayStr, hasClaimedRefer: false 
+            });
+        }
+    });
+
+    // 🚀 ১০০% ইনস্ট্যান্ট লোডার (পপ-আপ ব্লকার ও ডিলে প্রবলেম মুক্ত)
+    function startUniversalAd(adName, rewardPoints) {
+        let currentDaily = parseInt(document.getElementById('dailyTracker').innerText);
+        if(currentDaily >= maxDailyLimit) {
+            alert("Today's limit reached! Come back tomorrow.");
+            return;
+        }
+        if(currentDaily + rewardPoints > maxDailyLimit) {
+            rewardPoints = maxDailyLimit - currentDaily;
+        }
+
+        // ব্রাউজার ব্লকিং এড়াতে ক্লিক করার সাথে সাথে সরাসরি Adsterra আগে রান করবে
+        runBackupAdsterra(adName, rewardPoints);
+
+        // সাথে ব্যাকগ্রাউন্ডে Monetag এক্সিকিউট করার চেষ্টা করবে (যদি স্ক্রিপ্ট সচল থাকে)
+        if (typeof show_11112726 === 'function') {
+            try {
+                show_11112726();
+            } catch(e) {
+                console.log("Monetag skipped, running via Adsterra link.");
+            }
+        }
+    }
+
+    // 💥 ব্যাকআপ অ্যাডস্টেরা এক্সিকিউটর
+    function runBackupAdsterra(adName, rewardPoints) {
+        // ইউজারের ক্লিকের সাথে সাথেই ইনস্ট্যান্টলি নিউ ট্যাব ওপেন হবে
+        window.open(adsterraLink, '_blank');
+        
+        // ২ সেকেন্ড পর ব্যাকগ্রাউন্ডে সিকিউরলি ডাটাবেসে কয়েন জমা হবে
+        setTimeout(() => {
+            creditUserCoins(adName + " (Direct)", rewardPoints);
+        }, 2000);
+    }
+
+    // 💰 কয়েন ব্যালেন্স আপডেট ফাংশন
+    function creditUserCoins(adSource, points) {
+        let currentDaily = parseInt(document.getElementById('dailyTracker').innerText);
+        let currentCoins = parseInt(document.getElementById('userCoins').innerText);
+        
+        // ডাবল অ্যাড যেন কাউন্ট না হয় তার জন্য ফাইনাল সেফটি চেক
+        if(currentDaily >= maxDailyLimit) return;
+        if(currentDaily + points > maxDailyLimit) {
+            points = maxDailyLimit - currentDaily;
+        }
+
+        database.ref('users/' + userId).update({
+            coins: currentCoins + points,
+            dailyAdCoins: currentDaily + points,
+            lastAdDate: todayStr
+        });
+    }
+
+    function switchTab(screenId, element) {
+        document.querySelectorAll('.tab-screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        document.getElementById('screen-' + screenId).classList.add('active');
+        element.classList.add('active');
+
+        const titleMap = { 'home': 'Play Cash Bot 💰', 'tasks': 'Bonus Ads 🎥', 'withdraw': 'Cashout Center 💵', 'refer': 'Refer & Profile 👥' };
+        document.getElementById('appTitle').innerText = titleMap[screenId];
+    }
+
+    function submitWithdraw() {
+        let method = document.getElementById('method').value;
+        let number = document.getElementById('walletNumber').value.trim();
+        let amount = parseInt(document.getElementById('withdrawAmount').value);
+        let currentCoins = parseInt(document.getElementById('userCoins').innerText);
+
+        if(!number || !amount) { alert("Please enter account number and amount."); return; }
+        if(amount < minWithdrawLimit) { alert(`Minimum withdrawal is ${minWithdrawLimit} coins!`); return; }
+        if(amount > currentCoins) { alert("Insufficient balance!"); return; }
+
+        database.ref('users/' + userId).update({ coins: currentCoins - amount });
+
+        let requestRef = database.ref('withdrawRequests').push();
+        requestRef.set({
+            userId: userId, method: method, number: number, amount: amount, status: "Pending", timestamp: new Date().toLocaleString()
+        }).then(() => {
+            alert("Request submitted successfully to Admin Panel!");
+            document.getElementById('walletNumber').value = "";
+            document.getElementById('withdrawAmount').value = "";
+        });
+    }
+</script>
+</body>
+</html>
