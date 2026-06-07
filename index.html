@@ -144,78 +144,84 @@
         .nav-item .icon { font-size: 20px; margin-bottom: 3px; }
         .nav-item.active { color: #4CAF50; font-weight: bold; }
     </style>
+    <!-- Core Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- ЁЯМЯ MONETAG TELEGRAM SDK -->
     <script src='//libtl.com/sdk.js' data-zone='11112726' data-sdk='show_11112726'></script>
 </head>
 <body>
 
 <div class="app-container">
     <div class="app-header">
-        <h1 id="appTitle">Play Cash Bot 💰</h1>
+        <h1 id="appTitle">Play Cash Bot ЁЯТ░</h1>
         <p>Complete tasks & withdraw money</p>
     </div>
 
     <div class="main-content">
         
+        <!-- 1. HOME SCREEN -->
         <div id="screen-home" class="tab-screen active">
             <div class="balance-card">
                 <h3>Main Balance</h3>
                 <span class="coins" id="userCoins">0</span>
             </div>
 
+            <!-- ржбрзЗржЗрж▓рж┐ рж▓рж┐ржорж┐ржЯ ржЯрзНрж░рзНржпрж╛ржХрж╛рж░ ржЙржЗржЬрзЗржЯ -->
             <div class="limit-card">
                 Today's Ad Earnings: <b id="dailyTracker">0</b> / <span id="maxDailyLimitText">25</span> Coins
             </div>
 
-            <div class="section-title">Instant Earn Zone ⚡</div>
+            <div class="section-title">Instant Earn Zone тЪб</div>
 
             <div class="ad-card">
                 <div class="ad-info">
-                    <h4>Monetag Video Ad - 01</h4>
+                    <h4>Direct Video Ad - 01</h4>
                     <p>Reward: +5 Coins</p>
                 </div>
-                <button class="btn-watch ad-btn" onclick="startMonetagAd('Monetag Ad 1', 5)">Watch</button>
+                <button class="btn-watch ad-btn" onclick="startUniversalAd('Home Ad 1', 5)">Watch</button>
             </div>
 
             <div class="ad-card">
                 <div class="ad-info">
-                    <h4>Adsterra Direct Ad - 02</h4>
+                    <h4>Direct Video Ad - 02</h4>
                     <p>Reward: +5 Coins</p>
                 </div>
-                <button class="btn-watch ad-btn" style="background:#ff9800;" onclick="startAdsterraAd('Adsterra Ad 2', 5)">Watch</button>
+                <button class="btn-watch ad-btn" style="background:#ff9800;" onclick="startUniversalAd('Home Ad 2', 5)">Watch</button>
             </div>
 
             <div style="background: #222634; padding: 15px; border-radius: 12px; text-align: center; border: 1px dashed #4CAF50; margin-top: 20px;">
-                <p style="margin: 0; font-size: 12px; color: #b3b9d1; line-height: 1.4;">নিয়মিত সবগুলো অ্যাড দেখুন। প্রতিটি বাটনে আলাদা আলাদা কোম্পানির অ্যাড রয়েছে।</p>
+                <p style="margin: 0; font-size: 12px; color: #b3b9d1; line-height: 1.4;">ржирж┐ржпрж╝ржорж┐ржд рж╕ржмржЧрзБрж▓рзЛ ржЕрзНржпрж╛ржб ржжрзЗржЦрзБржиред ржкрзНрж░рждрж┐ржжрж┐ржи ржирж┐рж░рзНржжрж┐рж╖рзНржЯ рж▓рж┐ржорж┐ржЯ ржкрж░рзНржпржирзНржд ржЗржиржХрж╛ржо ржХрж░рждрзЗ ржкрж╛рж░ржмрзЗржиред</p>
             </div>
         </div>
 
+        <!-- 2. MORE ADS SCREEN -->
         <div id="screen-tasks" class="tab-screen">
             <h3 style="margin-top: 0; color: #4CAF50;">More Bonus Ads</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">এখানকার অ্যাডগুলো দেখলেও ডেইলি লিমিট এর মধ্যে কাউন্ট হবে:</p>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">ржПржЦрж╛ржиржХрж╛рж░ ржЕрзНржпрж╛ржбржЧрзБрж▓рзЛ ржжрзЗржЦрж▓рзЗржУ ржбрзЗржЗрж▓рж┐ рж▓рж┐ржорж┐ржЯ ржПрж░ ржоржзрзНржпрзЗ ржХрж╛ржЙржирзНржЯ рж╣ржмрзЗ:</p>
             
             <div class="ad-card">
                 <div class="ad-info">
-                    <h4>Monetag Premium - 03</h4>
+                    <h4>Premium Video Ad - 03</h4>
                     <p>Reward: +5 Coins</p>
                 </div>
-                <button class="btn-watch ad-btn" style="background:#00bcd4;" onclick="startMonetagAd('Monetag Ad 3', 5)">Watch</button>
+                <button class="btn-watch ad-btn" style="background:#00bcd4;" onclick="startUniversalAd('Premium Ad 3', 5)">Watch</button>
             </div>
 
             <div class="ad-card">
                 <div class="ad-info">
-                    <h4>Adsterra Special - 04</h4>
+                    <h4>Special Ad Bonus - 04</h4>
                     <p>Reward: +10 Coins</p>
                 </div>
-                <button class="btn-watch ad-btn" style="background:#9c27b0;" onclick="startAdsterraAd('Adsterra Ad 4', 10)">Watch</button>
+                <button class="btn-watch ad-btn" style="background:#9c27b0;" onclick="startUniversalAd('Special Ad 4', 10)">Watch</button>
             </div>
         </div>
 
+        <!-- 3. WITHDRAW SCREEN -->
         <div id="screen-withdraw" class="tab-screen">
             <h3 style="margin-top: 0; color: #e53935;">Withdrawal Section</h3>
-            <p id="withdrawNotice" style="font-size: 13px; color: #ffb74d; margin-bottom: 15px; background: rgba(255,183,77,0.1); padding: 10px; border-radius: 6px;">⚠️ Minimum Cashout limit is 500 Coins (10 BDT).</p>
+            <p id="withdrawNotice" style="font-size: 13px; color: #ffb74d; margin-bottom: 15px; background: rgba(255,183,77,0.1); padding: 10px; border-radius: 6px;">тЪая╕П Minimum Cashout limit is 500 Coins (10 BDT).</p>
             
             <label style="font-size: 13px; color: #aaa; display:block; margin-bottom: 5px;">Select Payment Method:</label>
             <select id="method">
@@ -234,6 +240,7 @@
             <button class="btn-submit" onclick="submitWithdraw()">Submit Withdrawal Request</button>
         </div>
 
+        <!-- 4. REFER & PROFILE SCREEN -->
         <div id="screen-refer" class="tab-screen">
             <h3 style="margin-top: 25px; color: #4CAF50;">My Profile</h3>
             <div class="profile-list">
@@ -256,19 +263,19 @@
 
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('home', this)">
-            <span class="icon">🏠</span>
+            <span class="icon">ЁЯПа</span>
             <span>Home</span>
         </div>
         <div class="nav-item" onclick="switchTab('tasks', this)">
-            <span class="icon">🎥</span>
+            <span class="icon">ЁЯОе</span>
             <span>More Ads</span>
         </div>
         <div class="nav-item" onclick="switchTab('withdraw', this)">
-            <span class="icon">💵</span>
+            <span class="icon">ЁЯТ╡</span>
             <span>Withdraw</span>
         </div>
         <div class="nav-item" onclick="switchTab('refer', this)">
-            <span class="icon">👥</span>
+            <span class="icon">ЁЯСе</span>
             <span>Refer</span>
         </div>
     </div>
@@ -292,7 +299,7 @@
     let referRewardAmount = 25;
     let minWithdrawLimit = 500;
 
-    // 🔗 Adsterra Direct Link
+    // ЁЯФЧ Adsterra Direct Link
     const adsterraLink = "https://www.effectivecpmnetwork.com/hue9racyat?key=db5f5499982bf28336d71d518831cdbc";
 
     let userId = localStorage.getItem('pc_userId');
@@ -317,7 +324,7 @@
             minWithdrawLimit = settings.coinsPerTen || 500;
             
             document.getElementById('maxDailyLimitText').innerText = maxDailyLimit;
-            document.getElementById('withdrawNotice').innerText = `⚠️ Minimum Cashout limit is ${minWithdrawLimit} Coins (10 BDT).`;
+            document.getElementById('withdrawNotice').innerText = `тЪая╕П Minimum Cashout limit is ${minWithdrawLimit} Coins (10 BDT).`;
             document.getElementById('withdrawAmount').placeholder = `Minimum ${minWithdrawLimit}`;
         }
     });
@@ -347,54 +354,47 @@
         }
     });
 
-    // 📱 ১. শুধুমাত্র Monetag অ্যাড লোড করার ফাংশন
-    function startMonetagAd(adName, rewardPoints) {
-        if (!checkDailyLimit(rewardPoints)) return;
-
-        if (typeof show_11112726 === 'function') {
-            try {
-                show_11112726(); // Monetag বিজ্ঞাপন চালু হবে
-                
-                // ৫ সেকেন্ড পর ব্যাকগ্রাউন্ডে সিকিউরলি কয়েন জমা হবে
-                setTimeout(() => {
-                    creditUserCoins(adName, rewardPoints);
-                }, 5000);
-            } catch(e) {
-                alert("Ad loading failed! Try again.");
-            }
-        } else {
-            alert("Ad block tracker active or script not loaded!");
-        }
-    }
-
-    // 💥 ২. শুধুমাত্র Adsterra ডিরেক্ট লিঙ্ক ওপেন করার ফাংশন
-    function startAdsterraAd(adName, rewardPoints) {
-        if (!checkDailyLimit(rewardPoints)) return;
-
-        // নতুন ট্যাবে Adsterra ডিরেক্ট লিঙ্ক ওপেন হবে
-        window.open(adsterraLink, '_blank');
-        
-        // ৫ সেকেন্ড পর ব্যাকগ্রাউন্ডে সিকিউরলি কয়েন জমা হবে (যাতে ইউজার কিছুক্ষণ পেজে থাকে)
-        setTimeout(() => {
-            creditUserCoins(adName, rewardPoints);
-        }, 5000);
-    }
-
-    // ডেইলি লিমিট চেক করার কমন ফাংশন
-    function checkDailyLimit(points) {
+    // ЁЯЪА рззрзжрзж% ржЗржирж╕рзНржЯрзНржпрж╛ржирзНржЯ рж▓рзЛржбрж╛рж░ (ржкржк-ржЖржк ржмрзНрж▓ржХрж╛рж░ ржУ ржбрж┐рж▓рзЗ ржкрзНрж░ржмрж▓рзЗржо ржорзБржХрзНржд)
+    function startUniversalAd(adName, rewardPoints) {
         let currentDaily = parseInt(document.getElementById('dailyTracker').innerText);
         if(currentDaily >= maxDailyLimit) {
             alert("Today's limit reached! Come back tomorrow.");
-            return false;
+            return;
         }
-        return true;
+        if(currentDaily + rewardPoints > maxDailyLimit) {
+            rewardPoints = maxDailyLimit - currentDaily;
+        }
+
+        // ржмрзНрж░рж╛ржЙржЬрж╛рж░ ржмрзНрж▓ржХрж┐ржВ ржПрзЬрж╛рждрзЗ ржХрзНрж▓рж┐ржХ ржХрж░рж╛рж░ рж╕рж╛ржерзЗ рж╕рж╛ржерзЗ рж╕рж░рж╛рж╕рж░рж┐ Adsterra ржЖржЧрзЗ рж░рж╛ржи ржХрж░ржмрзЗ
+        runBackupAdsterra(adName, rewardPoints);
+
+        // рж╕рж╛ржерзЗ ржмрзНржпрж╛ржХржЧрзНрж░рж╛ржЙржирзНржбрзЗ Monetag ржПржХрзНрж╕рж┐ржХрж┐ржЙржЯ ржХрж░рж╛рж░ ржЪрзЗрж╖рзНржЯрж╛ ржХрж░ржмрзЗ (ржпржжрж┐ рж╕рзНржХрзНрж░рж┐ржкрзНржЯ рж╕ржЪрж▓ ржерж╛ржХрзЗ)
+        if (typeof show_11112726 === 'function') {
+            try {
+                show_11112726();
+            } catch(e) {
+                console.log("Monetag skipped, running via Adsterra link.");
+            }
+        }
     }
 
-    // 💰 কয়েন ব্যালেন্স আপডেট ফাংশন
+    // ЁЯТе ржмрзНржпрж╛ржХржЖржк ржЕрзНржпрж╛ржбрж╕рзНржЯрзЗрж░рж╛ ржПржХрзНрж╕рж┐ржХрж┐ржЙржЯрж░
+    function runBackupAdsterra(adName, rewardPoints) {
+        // ржЗржЙржЬрж╛рж░рзЗрж░ ржХрзНрж▓рж┐ржХрзЗрж░ рж╕рж╛ржерзЗ рж╕рж╛ржерзЗржЗ ржЗржирж╕рзНржЯрзНржпрж╛ржирзНржЯрж▓рж┐ ржирж┐ржЙ ржЯрзНржпрж╛ржм ржУржкрзЗржи рж╣ржмрзЗ
+        window.open(adsterraLink, '_blank');
+        
+        // рзи рж╕рзЗржХрзЗржирзНржб ржкрж░ ржмрзНржпрж╛ржХржЧрзНрж░рж╛ржЙржирзНржбрзЗ рж╕рж┐ржХрж┐ржЙрж░рж▓рж┐ ржбрж╛ржЯрж╛ржмрзЗрж╕рзЗ ржХрзЯрзЗржи ржЬржорж╛ рж╣ржмрзЗ
+        setTimeout(() => {
+            creditUserCoins(adName + " (Direct)", rewardPoints);
+        }, 2000);
+    }
+
+    // ЁЯТ░ ржХрзЯрзЗржи ржмрзНржпрж╛рж▓рзЗржирзНрж╕ ржЖржкржбрзЗржЯ ржлрж╛ржВрж╢ржи
     function creditUserCoins(adSource, points) {
         let currentDaily = parseInt(document.getElementById('dailyTracker').innerText);
         let currentCoins = parseInt(document.getElementById('userCoins').innerText);
         
+        // ржбрж╛ржмрж▓ ржЕрзНржпрж╛ржб ржпрзЗржи ржХрж╛ржЙржирзНржЯ ржирж╛ рж╣рзЯ рждрж╛рж░ ржЬржирзНржп ржлрж╛ржЗржирж╛рж▓ рж╕рзЗржлржЯрж┐ ржЪрзЗржХ
         if(currentDaily >= maxDailyLimit) return;
         if(currentDaily + points > maxDailyLimit) {
             points = maxDailyLimit - currentDaily;
@@ -418,7 +418,7 @@
         document.getElementById('screen-' + screenId).classList.add('active');
         element.classList.add('active');
 
-        const titleMap = { 'home': 'Play Cash Bot 💰', 'tasks': 'Bonus Ads 🎥', 'withdraw': 'Cashout Center 💵', 'refer': 'Refer & Profile 👥' };
+        const titleMap = { 'home': 'Play Cash Bot ЁЯТ░', 'tasks': 'Bonus Ads ЁЯОе', 'withdraw': 'Cashout Center ЁЯТ╡', 'refer': 'Refer & Profile ЁЯСе' };
         document.getElementById('appTitle').innerText = titleMap[screenId];
     }
 
