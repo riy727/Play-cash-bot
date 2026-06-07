@@ -135,11 +135,9 @@
         .nav-item .icon { font-size: 20px; margin-bottom: 3px; }
         .nav-item.active { color: #4CAF50; font-weight: bold; }
     </style>
-    <!-- Core Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    <!-- 🌟 MONETAG TELEGRAM SDK -->
     <script src='//libtl.com/sdk.js' data-zone='11112726' data-sdk='show_11112726'></script>
 </head>
 <body>
@@ -152,7 +150,6 @@
 
     <div class="main-content">
         
-        <!-- 1. HOME SCREEN -->
         <div id="screen-home" class="tab-screen active">
             <div class="balance-card">
                 <h3>Main Balance</h3>
@@ -186,7 +183,6 @@
             </div>
         </div>
 
-        <!-- 2. MORE ADS SCREEN -->
         <div id="screen-tasks" class="tab-screen">
             <h3 style="margin-top: 0; color: #4CAF50;">More Bonus Ads</h3>
             <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">এখানকার অ্যাডগুলো দেখলেও ডেইলি লিমিট এর মধ্যে কাউন্ট হবে:</p>
@@ -208,7 +204,6 @@
             </div>
         </div>
 
-        <!-- 3. WITHDRAW SCREEN -->
         <div id="screen-withdraw" class="tab-screen">
             <h3 style="margin-top: 0; color: #e53935;">Withdrawal Section</h3>
             <p id="withdrawNotice" style="font-size: 13px; color: #ffb74d; margin-bottom: 15px; background: rgba(255,183,77,0.1); padding: 10px; border-radius: 6px;">⚠️ Minimum Cashout limit is 500 Coins (10 BDT).</p>
@@ -230,7 +225,6 @@
             <button class="btn-submit" onclick="submitWithdraw()">Submit Withdrawal Request</button>
         </div>
 
-        <!-- 4. REFER & PROFILE SCREEN -->
         <div id="screen-refer" class="tab-screen">
             <h3 style="margin-top: 25px; color: #4CAF50;">My Profile</h3>
             <div class="profile-list">
@@ -290,8 +284,6 @@
     let minWithdrawLimit = 500;
     let isAdRunning = false; 
 
-    const adsterraLink = "https://www.effectivecpmnetwork.com/hue9racyat?key=db5f5499982bf28336d71d518831cdbc";
-
     let userId = localStorage.getItem('pc_userId');
     if(!userId) {
         userId = String(Math.floor(1000 + Math.random() * 9000));
@@ -319,7 +311,7 @@
         }
     });
 
-    // Database Realtime Sync (শুধুমাত্র UI ভ্যালু ডিসপ্লে করার জন্য)
+    // Database Realtime Sync
     database.ref('users/' + userId).on('value', (snapshot) => {
         const data = snapshot.val();
         const coins = data ? (parseInt(data.coins) || 0) : 0;
@@ -331,7 +323,6 @@
         document.getElementById('profRefCount').innerText = refCount + " Users";
         document.getElementById('dailyTracker').innerText = dailyEarnings;
 
-        // টাইমার রানিং না থাকলে গ্লোবাল লিমিট চেক কাজ করবে
         if(!isAdRunning) {
             if(dailyEarnings >= maxDailyLimit) {
                 document.querySelectorAll('.ad-btn').forEach(btn => btn.disabled = true);
@@ -347,7 +338,7 @@
         }
     });
 
-    // 🚀 অ্যাড স্টার্টার এবং সেফ রিয়েল-টাইম কাউন্টডাউন
+    // 🚀 ইনস্ট্যান্ট এড লোড এবং নো-ওয়েটিং সাকসেস লজিক
     function startUniversalAd(buttonElement, adName, rewardPoints) {
         if(isAdRunning) return;
 
@@ -358,59 +349,39 @@
         }
 
         isAdRunning = true;
-        
-        // ১. টাইমার ইন্টারভাল সেটআপ এবং স্ক্রিন বাটন লক করা
-        let timeLeft = 15;
-        buttonElement.innerText = `Wait ${timeLeft}s...`;
         const originalBg = buttonElement.style.background;
-        buttonElement.style.background = "#555";
+        
+        // বাটন লক ও সাথে সাথে সাকসেস মোড চালু
         document.querySelectorAll('.ad-btn').forEach(btn => btn.disabled = true);
 
-        // ২. ট্রাই-ক্যাচ সেফটি ব্লকে ইনস্ট্যান্ট পপআপ ফায়ারিং
-        setTimeout(() => {
-            try {
-                window.open(adsterraLink, '_blank');
-            } catch(e) { console.log("Adsterra popup blocked."); }
-
-            try {
-                if (typeof show_11112726 === 'function') {
-                    show_11112726();
-                }
-            } catch(e) { console.log("Monetag failed."); }
-        }, 100);
-
-        // ৩. কাউন্টডাউন ইন্টারভাল রানার
-        let countdown = setInterval(() => {
-            timeLeft--;
-            if(timeLeft > 0) {
-                buttonElement.innerText = `Wait ${timeLeft}s...`;
-            } else {
-                clearInterval(countdown);
-                
-                // ৪. ১৫ সেকেন্ড শেষ হলে সিকিউরলি একবার কয়েন ক্রেডিট ফাংশন কল হবে
-                creditUserCoins(rewardPoints, () => {
-                    // কয়েন যোগ করার প্রসেস শেষ হলে সাকসেস মেসেজ আসবে
-                    buttonElement.innerText = "Success ✅";
-                    buttonElement.style.background = "#28a745";
-                    
-                    setTimeout(() => {
-                        buttonElement.innerText = "Watch";
-                        buttonElement.style.background = originalBg;
-                        isAdRunning = false;
-                        
-                        let updatedDaily = parseInt(document.getElementById('dailyTracker').innerText || "0");
-                        if(updatedDaily < maxDailyLimit) {
-                            document.querySelectorAll('.ad-btn').forEach(btn => btn.disabled = false);
-                        }
-                    }, 2000);
-                });
+        // ১. ব্যাকগ্রাউন্ডে কোনো টাইমার ছাড়া সাথে সাথে Monetag অ্যাড ওপেন করা
+        try {
+            if (typeof show_11112726 === 'function') {
+                show_11112726();
             }
-        }, 1000);
+        } catch(e) { console.log("Monetag script loading issue."); }
+
+        // ২. কোনো ওয়েটিং ছাড়া ইনস্ট্যান্টলি ডাটাবেসে কয়েন অ্যাড করা
+        creditUserCoins(rewardPoints, () => {
+            buttonElement.innerText = "Success ✅";
+            buttonElement.style.background = "#28a745";
+            
+            // ২ সেকেন্ড পর বাটন রিলিজ
+            setTimeout(() => {
+                buttonElement.innerText = "Watch";
+                buttonElement.style.background = originalBg;
+                isAdRunning = false;
+                
+                let updatedDaily = parseInt(document.getElementById('dailyTracker').innerText || "0");
+                if(updatedDaily < maxDailyLimit) {
+                    document.querySelectorAll('.ad-btn').forEach(btn => btn.disabled = false);
+                }
+            }, 2000);
+        });
     }
 
-    // 💰 ফিক্সড ব্যালেন্স ক্রেডিটর (লুপ ও ডাবল এন্ট্রি প্রটেক্টেড)
+    // 💰 কয়েন ক্রেডিটর
     function creditUserCoins(points, callback) {
-        // লুপ ও মাল্টিপল সাবমিশন বন্ধ করতে .once() ব্যবহার করা হয়েছে
         database.ref('users/' + userId).once('value').then((snapshot) => {
             const data = snapshot.val();
             let dbCoins = data ? (parseInt(data.coins) || 0) : 0;
@@ -421,7 +392,6 @@
                 return;
             }
 
-            // যদি রিওয়ার্ড যোগ করলে লিমিট পার হয়ে যায়, তবে বাকি থাকা অংশটুকু দেওয়া হবে
             if(dbDaily + points > maxDailyLimit) {
                 points = maxDailyLimit - dbDaily;
             }
